@@ -1,0 +1,15 @@
+/log/*.log
+/tmp
+/.env
+/bin
+/doc
+/.idea
+# Documentation shit
+/coverage
+/public/docs
+
+# Exclude OS X folder attributes
+.DS_Store
+
+# Redis
+/dump.rdb
