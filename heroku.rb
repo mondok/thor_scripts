@@ -11,7 +11,7 @@ class HerokuThor < Thor
   
   desc "pull_and_restore DATABASE_NAME", "pull the latest database from heroku"   
   def pull_and_restore(database_name)
-    exec "heroku pgbackups:capture && curl -o latest.dump `heroku pgbackups:url` && pg_restore --verbose --clean --no-acl --no-owner -h localhost -U postgres -d #{database_name} latest.dump && rm latest.dump"
+    exec "heroku pgbackups:capture --expire && curl -o latest.dump `heroku pgbackups:url` && pg_restore --verbose --clean --no-acl --no-owner -h localhost -U postgres -d #{database_name} latest.dump && rm latest.dump"
   end
 
   desc "push DATABASE_NAME", "pull the latest database to dropbox"  
