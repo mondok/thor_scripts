@@ -7,12 +7,22 @@ require "thor"
 
 class HerokuThor < Thor                                                
   package_name "Heroku"                                             
-  map "-L" => :list                                              
+  map "-L" => :list   
+  
+  desc "start jekyl", "start jekyll"
+  def jekyll
+    exec "jekyll server --baseurl / --watch"
+  end                                           
   
   desc "pull_and_restore DATABASE_NAME", "pull the latest database from heroku"   
   def pull_and_restore(database_name)
     exec "rake db:drop && rake db:create && heroku pgbackups:capture --expire && curl -o latest.dump `heroku pgbackups:url` && pg_restore --verbose --clean --no-acl --no-owner -h localhost -U postgres -d #{database_name} latest.dump && rm latest.dump"
   end
+
+  desc "backup database", "backs up the database"
+  def backup_heroku
+    exec "heroku pgbackups:capture --expire && curl -o latest.dump `heroku pgbackups:url`"
+  end  
 
   desc "push DATABASE_NAME", "pull the latest database to dropbox"  
   def push(database_name)
@@ -27,6 +37,21 @@ class HerokuThor < Thor
   desc "dump mysql DATABASE_NAME", "dump mysql database to file"  
   def dump(database_name)
     exec "mysqldump -uroot --databases #{database_name} >> #{database_name}.sql"
+  end  
+
+  desc "reset database", "reset database"  
+  def reset
+    exec "rake db:drop && rake db:create && rake db:migrate"
+  end   
+
+  desc "build assets", "build assets"
+  def assets
+    exec "rm -rf public/assets && RAILS_ENV=production rake assets:clean && RAILS_ENV=production rake assets:precompile"
+  end     
+
+  desc "clean assets", "clean assets"
+  def clean_assets
+    exec "rm -rf public/assets && RAILS_ENV=production rake assets:clean"
   end      
 end
 
